@@ -14,7 +14,7 @@ $ python3 -m venv venv
 $ source venv/bin/activate
 ```
 
-## Once activate, install the requirements.txt file
+## Once activated, install the requirements.txt file
 
 ```
 (venv) $ pip install -r requirements.txt
