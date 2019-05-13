@@ -1,5 +1,5 @@
 # Get the things we need to run our Flask webserver
-from flask import Flask, render_template, redirect, url_for, session
+from flask import Flask, render_template, redirect, url_for, session, jsonify
 
 # Imported for reading Pi sensors
 import os
@@ -81,7 +81,8 @@ def temp():
         temp_f = temp_c * 9.0 / 5.0 + 32.0
         return temp_c, temp_f
 
-    # Save to file function
+    # Save to file function.
+    # Not currently being used.
     def save_to_file():
         get_temps = calc_temps()
         temp_c = str(get_temps[0])
@@ -101,3 +102,45 @@ def temp():
     
     # Render the template for this route with data
     return render_template('temp.html', temp_f=temp_f)
+
+@app.route('/json-test')
+def json_test():
+    # read temp from sensor file
+    def read_temp_raw():
+        f = open(temp_sensor_paths[0], 'r')
+        lines = str(f.readlines())
+        f.close()
+        return lines
+
+    # make raw data pretty
+    def read_temp():
+        lines = read_temp_raw()
+        for groups in yesRegex.findall(lines):
+            if groups[0] != 'YES':
+                time.sleep(0.5)
+                lines = read_temp_raw()
+            for groups in tempRegex.findall(lines):
+                temp = groups[0]
+                temp_number = temp[2:]
+                if temp_number != -1:
+                    return temp_number
+                else:
+                    return 'Temp error: value = -1'
+
+    # calculate to celcius and farenheit
+    def calc_temps():
+        temp = read_temp()
+        temp_c = float(temp) / 1000.0
+        temp_f = temp_c * 9.0 / 5.0 + 32.0
+        return temp_c, temp_f
+        
+    def get_temp_data():
+        get_temps = calc_temps()
+        temp_c = str(get_temps[0])
+        temp_f = str(get_temps[1])
+        return temp_f
+        
+    # Call to get the temp values
+    temp_f = get_temp_data()
+    
+    return jsonify(temp_f=temp_f)
