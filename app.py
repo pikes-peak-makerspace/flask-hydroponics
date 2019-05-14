@@ -47,7 +47,7 @@ app = Flask(__name__)
 # Main route
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", title="Home")
 
 # Temperature route
 @app.route('/temp')

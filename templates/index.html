@@ -1,31 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Test</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-    <nav>
-        <a href="/">Index</a>
-        <a href="/temp">Temp</a>
-    </nav>
+{% extends "base.html" %}
 
-    <p class="my-button">Get live updates.</p>
+{% block content %}
 
-    <!-- Where the ajax data is loaded -->
-    <p>Current temp:</p>
-    <p class="ajax"></p>
+<p class="my-button">Get live updates.</p>
 
-    <script
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous">
-    </script>
+<!-- Where the ajax data is loaded -->
+<p>Current temp:</p>
+<p class="ajax"></p>
 
-    <script src="/static/js/scripts.js"></script>
-
-</body>
-</html>
+{% endblock %}

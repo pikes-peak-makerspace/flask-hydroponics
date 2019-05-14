@@ -1,0 +1,16 @@
+{
+    "ds18b20-sensors": [{
+        "id": 1,
+        "serial": "28-000007296c0d",
+        "base-dir": "/sys/bus/w1/devices/",
+        "file-location": "/w1_slave",
+        "physical-location": "unknown"
+    },
+    {
+        "id": 2,
+        "serial": "28-00000729be6e",
+        "base-dir": "/sys/bus/w1/devices/",
+        "file-location": "/w1_slave",
+        "physical-location": "unknown"
+    }]
+}
