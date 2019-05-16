@@ -6,6 +6,7 @@ import os
 import glob
 import time
 import re
+import json
 
 # Only used for initial route testing
 import random
@@ -47,7 +48,24 @@ app = Flask(__name__)
 # Main route
 @app.route("/")
 def index():
-    return render_template("index.html", title="Home")
+    # Read in some JSON
+    with open('db/ds18b20.json') as json_file:
+        data = json.load(json_file)
+        # sensors = []
+        # for sensor in data['ds18b20-sensors']:
+        #     sensor_id = sensor['id']
+        #     serial = sensor['serial']
+        #     sensors.append(sensor['serial'])
+        #     physical_location = sensor['physical-location']
+
+        # print(sensors)
+        # Prints all the json in the db file
+        # print(data['ds18b20-sensors'])
+        # Grabs the serial data in the first object of the json
+        # print(data['ds18b20-sensors'][0]['serial'])
+
+    data_type = type(data)
+    return render_template("index.html", title="Home", data=data, data_type=data_type)
 
 # Temperature route
 @app.route('/temp')
@@ -103,8 +121,8 @@ def temp():
     # Render the template for this route with data
     return render_template('temp.html', temp_f=temp_f)
 
-@app.route('/json-test')
-def json_test():
+@app.route('/json-response')
+def json_response():
     # read temp from sensor file
     def read_temp_raw():
         f = open(temp_sensor_paths[0], 'r')
