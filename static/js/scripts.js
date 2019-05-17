@@ -3,6 +3,7 @@ var $myAjax = $(".ajax");
 var $myButton = $(".my-button");
 
 // Load it the first time onto page
+// Need to clean this code up a lot
 $myAjax.load("/temp");
 
 // Function to load external resource

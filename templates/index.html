@@ -8,27 +8,4 @@
 <p>Current temp:</p>
 <p class="ajax"></p>
 
-<p>Sensors</p>
-{{ sensor_id }}
-
-<p>Data</p>
-{{ data }}
-
-<p>Data type</p>
-{{ data_type }}
-
-{#
-<p>Loop</p>
-{% for item in data %}
-    {{ data[item]['id'] }}
-{% endfor %}
-
-<p>Sensors</p>
-{{ sensors }}
-
-<!-- Loop through all the data in sensors -->
-{% for x in sensors %}
-    {{ x }}
-{% endfor %}
-#}
 {% endblock %}

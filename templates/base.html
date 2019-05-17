@@ -5,33 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+    {# Allow routes to set title, if provided in variable #}
     {% if title %}
-    <title>{{ title }} - Hydroponics</title>
+    <title>{{ title }} - PPM Hydroponics</title>
+    {# Otherwise display a default title #}
     {% else %}
-    <title>Hydroponics</title>
+    <title>PPM Hydroponics</title>
     {% endif %}
 
+    {# Defines a block for css so child templates may add to if needed #}
+    {# Reference: https://stackoverflow.com/questions/3127502/concat-multiple-block-in-jinja2 #}
     {% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     {% endblock %}
 
 </head>
 <body>
-    <nav>
-        <a href="/">Index</a>
-        <a href="/temp">Temp</a>
-    </nav>
 
-    {% block content %} {% endblock %}
+    {# Put everything in a bootstrap fluid container #}
+    <div class="container-fluid">
 
+        {# Include the site navigation #}
+        {% include 'includes/navigation.html' %}
 
-    <script
-        src="https://code.jquery.com/jquery-3.4.1.min.js"
-        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-        crossorigin="anonymous">
-    </script>
+        {# Set a default block for other pages to fill in content #}
+        {% block content %} {% endblock %}
+    </div>
 
+    {% block js %}
+    {# Add libraries #}
+    <script src="{{ url_for('static', filename='js/libs/jquery-3.3.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/libs/bootstrap.bundle.min.js') }}"></script>
+
+    {# Add custom scripts #}
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    {% endblock %}
 
 </body>
 </html>

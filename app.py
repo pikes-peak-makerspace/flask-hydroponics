@@ -48,9 +48,8 @@ app = Flask(__name__)
 # Main route
 @app.route("/")
 def index():
-    # Read in some JSON
-    with open('db/ds18b20.json') as json_file:
-        data = json.load(json_file)
+
+
         # sensors = []
         # for sensor in data['ds18b20-sensors']:
         #     sensor_id = sensor['id']
@@ -64,8 +63,7 @@ def index():
         # Grabs the serial data in the first object of the json
         # print(data['ds18b20-sensors'][0]['serial'])
 
-    data_type = type(data)
-    return render_template("index.html", title="Home", data=data, data_type=data_type)
+    return render_template("index.html", title="Home")
 
 # Temperature route
 @app.route('/temp')
