@@ -7,6 +7,8 @@ import glob
 import time
 import re
 import json
+import sys
+import Adafruit_DHT
 
 # Create flask app
 app = Flask(__name__)
@@ -172,6 +174,32 @@ def ds18b20_sensor_4():
     # Render the template for this route with data.
     # Read and display the JSON with JS calls on the index page.
     return jsonify(serial_number=serial_number, temps=temps, location=location)
+
+# URL of the route. Returns JSON with reading
+# and the location of the sensor in the physical 
+# enviroment.
+@app.route('/sensor/dht11/sensor_1')
+def dht11_sensor_1():
+
+
+    #serial_number = '28-0000072a26c3'
+    # Call to get the temp values.
+    # Pass the index of the correct temp sensor.
+    # Returns the temps in F and C.
+    try:
+        humidity, temperature = Adafruit_DHT.read_retry(11, 4)
+        temps = str(temperature)
+        humid = str(humidity)
+    except: 
+        temps = 'No sensor connected :('
+        humid = 'no humidity :('
+
+    # Manully set location of the sensor, for now.
+    location = 'unknown'
+    
+    # Render the template for this route with data.
+    # Read and display the JSON with JS calls on the index page.
+    return jsonify(serial_number=serial_number, temps=temps, humidity=humid, location=location)
 
 # Utility functions that help read the temps
 # for the ds18b20.
