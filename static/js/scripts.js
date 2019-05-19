@@ -23,7 +23,7 @@ $(document).ready(function() {
             if (json.temps == 'No sensor connected :(') {
                 formatTemps = '<p>' + json.temps + '</p>';
             } else {
-                formatTemps = '<p>' + json.temps[0] + ' F</p>';
+                formatTemps = '<p>' + Math.round(json.temps[0] * 100) / 100 + ' F</p>';
             }
 
             // Update the HMTL 
