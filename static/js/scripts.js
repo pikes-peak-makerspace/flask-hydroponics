@@ -13,7 +13,7 @@ $(document).ready(function() {
             console.log(json);
             tempSensor0.html(
                 '<p>' + json.serial_number + '</p>' +
-                '<p>' + json.temps + '</p>' +
+                '<p>' + json.temps[0] + '</p>' +
                 '<p> <b>Location: </b>' + json.location + '</p>'
             );
         });
