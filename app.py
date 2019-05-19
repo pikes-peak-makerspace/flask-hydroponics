@@ -1,162 +1,212 @@
-# Get the things we need to run our Flask webserver
+# Get the things we need to run our Flask webserver and other utilities.
 from flask import Flask, render_template, redirect, url_for, session, jsonify
 
-# Imported for reading Pi sensors
+# Imported for reading Pi sensors and various other things.
 import os
 import glob
 import time
 import re
 import json
 
-# Only used for initial route testing
-import random
+# Create flask app
+app = Flask(__name__)
 
-# Initialize modprobe stuff to read one-wire devices
-# like a water proof temp sensor: DS18B20
+# Main route of app. The (homepage). Javascript
+# served to this page will call the routes below.
+@app.route("/")
+def index():
+    # This route returns the index.html template.
+    return render_template("index.html", title="Home")
+
+
+# The following is setup for reading and parsing the
+# ds18b20 tempertaure sensor data + routes to get temp data.
+
+# Initialize modprobe to read one-wire devices.
+# Like a water proof temp sensor: DS18B20
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
-# path of the all the temp sensors
+# File system path of the all the temp sensors.
 base_dir = '/sys/bus/w1/devices/'
 
-# file location in each sensor
+# File location in each sensor folder.
+# This is where the live temp data is sent
+# and captured from. It is parsed with a REGEX.
 file_location = '/w1_slave'
 
-# full list of all the temp sensors unique ID
-# temp_sensors = ['28-00000729be6e', '28-000007291af0', '28-000007296c0d', '28-0000072a26c3', '28-0000072a2e50']
-temp_sensors = ['28-000007296c0d']
+# Full list of all the temp sensors unique IDs. 
+# These were manaully checked in the file system
+# when plugged in and then added here.
+temp_sensors = ['28-00000729be6e', '28-000007291af0',
+                '28-000007296c0d', '28-0000072a26c3',
+                '28-0000072a2e50']
 
 # Loops through each sensor and prepends and
 # appends the dir and file location to each.
 temp_sensor_paths = []
 for sensor in temp_sensors:
+    # Each sensor will have a path constructed like:
+    # /sys/bus/w1/devices/28-00000729be6e/w1_slave
     temp_sensor_paths.append(base_dir + sensor + file_location)
     
-# make regex to find 'YES'
+# Make regex to find 'YES'.
+# This ensures the sensor is working and reading data.
 yesRegex = re.compile(r'''(
     (YES)
 )''', re.VERBOSE)
 
-# make regex to find temp reading
+# Make regex to find temp reading.
+# This gets value after the 't=' characters.
 tempRegex = re.compile(r'''(
     (t=\d+)
 )''', re.VERBOSE)
 
-# Create flask instance
-app = Flask(__name__)
+# Temperature sensor routes (ds18b20). Multiple routes.
 
-# Main route
-@app.route("/")
-def index():
-
-
-        # sensors = []
-        # for sensor in data['ds18b20-sensors']:
-        #     sensor_id = sensor['id']
-        #     serial = sensor['serial']
-        #     sensors.append(sensor['serial'])
-        #     physical_location = sensor['physical-location']
-
-        # print(sensors)
-        # Prints all the json in the db file
-        # print(data['ds18b20-sensors'])
-        # Grabs the serial data in the first object of the json
-        # print(data['ds18b20-sensors'][0]['serial'])
-
-    return render_template("index.html", title="Home")
-
-# Temperature route
-@app.route('/temp')
-def temp():
-    # read temp from sensor file
-    def read_temp_raw():
-        f = open(temp_sensor_paths[0], 'r')
-        lines = str(f.readlines())
-        f.close()
-        return lines
-
-    # make raw data pretty
-    def read_temp():
-        lines = read_temp_raw()
-        for groups in yesRegex.findall(lines):
-            if groups[0] != 'YES':
-                time.sleep(0.5)
-                lines = read_temp_raw()
-            for groups in tempRegex.findall(lines):
-                temp = groups[0]
-                temp_number = temp[2:]
-                if temp_number != -1:
-                    return temp_number
-                else:
-                    return 'Temp error: value = -1'
-
-    # calculate to celcius and farenheit
-    def calc_temps():
-        temp = read_temp()
-        temp_c = float(temp) / 1000.0
-        temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c, temp_f
-
-    # Save to file function.
-    # Not currently being used.
-    def save_to_file():
-        get_temps = calc_temps()
-        temp_c = str(get_temps[0])
-        temp_f = str(get_temps[1])
-        data_file = open('temp_data.txt', 'a')
-        data_file.write('Celcius: ' + temp_c + ' Fahrenheit: ' + temp_f)
-        data_file.close()
+# URL of the route. Returns JSON with temp reading
+# and the location of the sensor in the physical 
+# enviroment.
+@app.route('/sensor/ds18b20/sensor_0')
+def ds18b20_sensor_0():
         
-    def get_temp_data():
-        get_temps = calc_temps()
-        temp_c = str(get_temps[0])
-        temp_f = str(get_temps[1])
-        return temp_f
-        
-    # Call to get the temp values
-    temp_f = get_temp_data()
+    serial_number = '28-00000729be6e'
+    # Call to get the temp values.
+    # Pass the index of the correct temp sensor.
+    # Returns the temps in F and C.
+    try:
+        temps = get_temp_data(temp_sensor_paths[0])
+    except: 
+        temps = 'No sensor connected :('
     
-    # Render the template for this route with data
-    return render_template('temp.html', temp_f=temp_f)
-
-@app.route('/json-response')
-def json_response():
-    # read temp from sensor file
-    def read_temp_raw():
-        f = open(temp_sensor_paths[0], 'r')
-        lines = str(f.readlines())
-        f.close()
-        return lines
-
-    # make raw data pretty
-    def read_temp():
-        lines = read_temp_raw()
-        for groups in yesRegex.findall(lines):
-            if groups[0] != 'YES':
-                time.sleep(0.5)
-                lines = read_temp_raw()
-            for groups in tempRegex.findall(lines):
-                temp = groups[0]
-                temp_number = temp[2:]
-                if temp_number != -1:
-                    return temp_number
-                else:
-                    return 'Temp error: value = -1'
-
-    # calculate to celcius and farenheit
-    def calc_temps():
-        temp = read_temp()
-        temp_c = float(temp) / 1000.0
-        temp_f = temp_c * 9.0 / 5.0 + 32.0
-        return temp_c, temp_f
-        
-    def get_temp_data():
-        get_temps = calc_temps()
-        temp_c = str(get_temps[0])
-        temp_f = str(get_temps[1])
-        return temp_f
-        
-    # Call to get the temp values
-    temp_f = get_temp_data()
+    # Manully set location of the sensor, for now.
+    location = 'unknown'
     
-    return jsonify(temp_f=temp_f)
+    # Render the template for this route with data.
+    # Read and display the JSON with JS calls on the index page.
+    return jsonify(serial_number=serial_number, temps=temps, location=location)
+
+# URL of the route. Returns JSON with temp reading
+# and the location of the sensor in the physical 
+# enviroment.
+@app.route('/sensor/ds18b20/sensor_1')
+def ds18b20_sensor_1():
+        
+    serial_number = '28-000007291af0'
+    # Call to get the temp values.
+    # Pass the index of the correct temp sensor.
+    # Returns the temps in F and C.
+    try:
+        temps = get_temp_data(temp_sensor_paths[1])
+    except: 
+        temps = 'No sensor connected :('
+    
+    # Manully set location of the sensor, for now.
+    location = 'unknown'
+    
+    # Render the template for this route with data.
+    # Read and display the JSON with JS calls on the index page.
+    return jsonify(serial_number=serial_number, temps=temps, location=location)
+
+# URL of the route. Returns JSON with temp reading
+# and the location of the sensor in the physical 
+# enviroment.
+@app.route('/sensor/ds18b20/sensor_2')
+def ds18b20_sensor_2():
+        
+    serial_number = '28-000007296c0d'
+    # Call to get the temp values.
+    # Pass the index of the correct temp sensor.
+    # Returns the temps in F and C.
+    try:
+        temps = get_temp_data(temp_sensor_paths[2])
+    except: 
+        temps = 'No sensor connected :('   
+    # Manully set location of the sensor, for now.
+    location = 'unknown'
+    
+    # Render the template for this route with data.
+    # Read and display the JSON with JS calls on the index page.
+    return jsonify(serial_number=serial_number, temps=temps, location=location)
+
+# URL of the route. Returns JSON with temp reading
+# and the location of the sensor in the physical 
+# enviroment.
+@app.route('/sensor/ds18b20/sensor_3')
+def ds18b20_sensor_3():
+        
+    serial_number = '28-0000072a26c3'
+    # Call to get the temp values.
+    # Pass the index of the correct temp sensor.
+    # Returns the temps in F and C.
+    try:
+        temps = get_temp_data(temp_sensor_paths[3])
+    except: 
+        temps = 'No sensor connected :('
+
+    # Manully set location of the sensor, for now.
+    location = 'unknown'
+    
+    # Render the template for this route with data.
+    # Read and display the JSON with JS calls on the index page.
+    return jsonify(serial_number=serial_number, temps=temps, location=location)
+
+# URL of the route. Returns JSON with temp reading
+# and the location of the sensor in the physical 
+# enviroment.
+@app.route('/sensor/ds18b20/sensor_4')
+def ds18b20_sensor_4():
+        
+    serial_number = '28-0000072a2e50'
+    # Call to get the temp values.
+    # Pass the index of the correct temp sensor.
+    # Returns the temps in F and C.
+    try:
+        temps = get_temp_data(temp_sensor_paths[4])
+    except: 
+        temps = 'No sensor connected :('
+            
+    # Manully set location of the sensor, for now.
+    location = 'unknown'
+    
+    # Render the template for this route with data.
+    # Read and display the JSON with JS calls on the index page.
+    return jsonify(serial_number=serial_number, temps=temps, location=location)
+
+# Utility functions that help read the temps
+# for the ds18b20.
+
+# Read temp from sensor file.
+def read_temp_raw(temp_sensor_path):
+    f = open(temp_sensor_path, 'r')
+    lines = str(f.readlines())
+    f.close()
+    return lines
+
+# make raw data pretty
+def read_temp(temp_sensor_path):
+    lines = read_temp_raw(temp_sensor_path)
+    for groups in yesRegex.findall(lines):
+        if groups[0] != 'YES':
+            time.sleep(0.5)
+            lines = read_temp_raw()
+        for groups in tempRegex.findall(lines):
+            temp = groups[0]
+            temp_number = temp[2:]
+            if temp_number != -1:
+                return temp_number
+            else:
+                return 'Temp error: value = -1'
+
+# calculate to celcius and farenheit
+def calc_temps(temp_sensor_path):
+    temp = read_temp(temp_sensor_path)
+    temp_c = float(temp) / 1000.0
+    temp_f = temp_c * 9.0 / 5.0 + 32.0
+    return temp_c, temp_f
+    
+def get_temp_data(temp_sensor_path):
+    get_temps = calc_temps(temp_sensor_path)
+    temp_c = str(get_temps[0])
+    temp_f = str(get_temps[1])
+    return temp_f, temp_c
