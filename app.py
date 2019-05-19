@@ -209,4 +209,4 @@ def get_temp_data(temp_sensor_path):
     get_temps = calc_temps(temp_sensor_path)
     temp_c = str(get_temps[0])
     temp_f = str(get_temps[1])
-    return round(temp_f, 2), round(temp_c, 2)
+    return temp_f, temp_c
