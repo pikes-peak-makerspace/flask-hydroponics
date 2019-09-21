@@ -17,6 +17,8 @@ with open(pi_check_path, 'r') as pi_check_file:
     pi_check_file = pi_check_file.read()
 print(pi_check_file)
 
+if "ID=raspbian" in pi_check_file:
+    print("looks like this is a pi")
 # Check if there is a line and if so if it is equal to raspbian
 
 # Create flask app
