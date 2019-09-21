@@ -48,7 +48,7 @@ if is_raspberry_pi:
 # Route to get data of available temp sensors
 @app.route("/available-temp-sensors")
 def available_temp_sensors():
-    jsonify(dir_output)
+    return jsonify(dir_output)
 
 
 
