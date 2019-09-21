@@ -11,7 +11,7 @@ import sys
 
 # Check if the device is a Raspberry Pi or not
 pi_check_path = "/etc/os-release"
-pi_check_file = open(path, 'r')
+pi_check_file = open(pi_check_path, 'r')
 pi_check_file.read()
 
 # Create flask app
