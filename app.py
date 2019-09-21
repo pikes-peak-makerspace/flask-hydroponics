@@ -8,7 +8,6 @@ import time
 import re
 import json
 import sys
-import Adafruit_DHT
 
 # Create flask app
 app = Flask(__name__)
@@ -19,7 +18,6 @@ app = Flask(__name__)
 def index():
     # This route returns the index.html template.
     return render_template("index.html", title="Home")
-
 
 # The following is setup for reading and parsing the
 # ds18b20 tempertaure sensor data + routes to get temp data.
