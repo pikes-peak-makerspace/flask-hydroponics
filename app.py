@@ -9,6 +9,11 @@ import re
 import json
 import sys
 
+# Check if the device is a Raspberry Pi or not
+pi_check_path = "/etc/os-release"
+pi_check_file = open(path, 'r')
+pi_check_file.read()
+
 # Create flask app
 app = Flask(__name__)
 
@@ -18,6 +23,12 @@ app = Flask(__name__)
 def index():
     # This route returns the index.html template.
     return render_template("index.html", title="Home")
+
+
+
+# Get a list of the sensors available on the PI
+
+
 
 # The following is setup for reading and parsing the
 # ds18b20 tempertaure sensor data + routes to get temp data.
