@@ -10,16 +10,23 @@ import json
 import sys
 
 # Check if the device is a Raspberry Pi or not
-# Path of the file we are checking for info
-pi_check_path = "/etc/os-release"
-# Open the file and save to variable
-with open(pi_check_path, 'r') as pi_check_file:
-    pi_check_file = pi_check_file.read()
-print(pi_check_file)
-
-if "ID=raspbian" in pi_check_file:
-    print("looks like this is a pi")
-# Check if there is a line and if so if it is equal to raspbian
+try:
+    # Path of the file we are checking for info
+    pi_check_path = "/etc/os-release"
+    # Open the file and save to variable
+    with open(pi_check_path, 'r') as pi_check_file:
+        # Read the file and save it into the same var name
+        pi_check_file = pi_check_file.read()
+    # Look for a specific line in the file
+    if "ID=raspbian" in pi_check_file:
+        print("Raspberry Pi detected! Setting is_raspberry_pi to True")
+        is_raspberry_pi = True
+    # Check if there is a line and if so if it is equal to raspbian
+# If it's not a pi then set pi setting to false
+except:
+    print("Raspberry Pi NOT detected! Setting is_raspberry_pi to False")
+    print("Some features will be disabled or replaced with dummy data.")
+    is_raspberry_pi = False
 
 # Create flask app
 app = Flask(__name__)
@@ -42,8 +49,9 @@ def index():
 
 # Initialize modprobe to read one-wire devices.
 # Like a water proof temp sensor: DS18B20
-os.system('modprobe w1-gpio')
-os.system('modprobe w1-therm')
+if is_raspberry_pi:
+    os.system('modprobe w1-gpio')
+    os.system('modprobe w1-therm')
 
 # File system path of the all the temp sensors.
 base_dir = '/sys/bus/w1/devices/'
