@@ -39,8 +39,17 @@ def index():
     return render_template("index.html", title="Home")
 
 
+# Get available temp sensors
+if is_raspberry_pi:
+    path_to_sensors = '/sys/bus/w1/devices/'
+    dir_output = os.listdir(path_to_sensors)
+    print(dir_output)
 
-# Get a list of the sensors available on the PI
+# Route to get data of available temp sensors
+@app.route("/available-temp-sensors")
+def available_temp_sensors():
+    jsonify(dir_output)
+
 
 
 
