@@ -10,9 +10,14 @@ import json
 import sys
 
 # Check if the device is a Raspberry Pi or not
+# Path of the file we are checking for info
 pi_check_path = "/etc/os-release"
-pi_check_file = open(pi_check_path, 'r')
-print(pi_check_file.read())
+# Open the file and save to variable
+with open(pi_check_path, 'r') as pi_check_file:
+    pi_check_file = pi_check_file.read()
+print(pi_check_file)
+
+# Check if there is a line and if so if it is equal to raspbian
 
 # Create flask app
 app = Flask(__name__)
