@@ -45,6 +45,11 @@ def index():
     # This route returns the index.html template.
     return render_template("index.html")
 
+# Initialize modprobe to read one-wire devices.
+# Like a water proof temp sensor: DS18B20
+if is_raspberry_pi:
+    os.system('modprobe w1-gpio')
+    os.system('modprobe w1-therm')
 
 # Path to the 1 wire devices
 one_wire_devices_path = "/sys/bus/w1/devices/"
@@ -70,11 +75,7 @@ def get_1wire_devices():
 # The following is setup for reading and parsing the
 # ds18b20 tempertaure sensor data + routes to get temp data.
 
-# Initialize modprobe to read one-wire devices.
-# Like a water proof temp sensor: DS18B20
-if is_raspberry_pi:
-    os.system('modprobe w1-gpio')
-    os.system('modprobe w1-therm')
+
 
 # File system path of the all the temp sensors.
 base_dir = '/sys/bus/w1/devices/'
