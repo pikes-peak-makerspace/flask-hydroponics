@@ -10,6 +10,7 @@ import json
 import sys
 
 # Check if the device is a Raspberry Pi or not
+# TODO This only checks if the OS is rasbian. Need to check more things to make sure its a pi.
 try:
     # Path of the file we are checking for info
     pi_check_path = "/etc/os-release"
@@ -74,9 +75,6 @@ def get_1wire_devices():
 
 # The following is setup for reading and parsing the
 # ds18b20 tempertaure sensor data + routes to get temp data.
-
-
-
 # File system path of the all the temp sensors.
 base_dir = '/sys/bus/w1/devices/'
 
