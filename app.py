@@ -39,15 +39,22 @@ def index():
     return render_template("index.html", title="Home")
 
 
-# Get available temp sensors
-if is_raspberry_pi:
-    path_to_sensors = '/sys/bus/w1/devices/'
-    dir_output = os.listdir(path_to_sensors)
-    print(dir_output)
+
 
 # Route to get data of available temp sensors
 @app.route("/available-temp-sensors")
 def available_temp_sensors():
+    # Get available w1 devices
+    if is_raspberry_pi:
+        # Path to the 1 wire devices
+        path_to_sensors = '/sys/bus/w1/devices/'
+        # Get a list of the devices
+        dir_output = os.listdir(path_to_sensors)
+        # Remove the master device
+        dir_output
+        print(dir_output)
+    else: 
+        dir_output = "No devices found"
     return jsonify(dir_output)
 
 
