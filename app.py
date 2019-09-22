@@ -63,6 +63,9 @@ def get_1wire_devices():
         dir_output = "Not on a Raspberry Pi!"
     else: 
         # TODO check if there are no devices and respond accordingly
+        # Update the modprobe devices for changes
+        os.system('modprobe w1-gpio')
+        os.system('modprobe w1-therm')
         # Get a list of the devices
         dir_output = os.listdir(one_wire_devices_path)
         # Remove the master device from the list
