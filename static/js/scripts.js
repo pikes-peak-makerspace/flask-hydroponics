@@ -1,6 +1,13 @@
 new Vue({
   el: '#app',
-  data: {
-    message: 'Hello Vue.js!'
+  data () {
+    return {
+      info: null
+    }
+  },
+  mounted () {
+    axios
+      .get('/1wire-devices')
+      .then(response => (this.info = response))
   }
 })
