@@ -58,21 +58,26 @@ one_wire_devices_path = "/sys/bus/w1/devices/"
 # Route to get data of available temp sensors
 @app.route("/1wire-devices")
 def get_1wire_devices():
-    # Get available w1 devices if on the raspberry pi
-    if not is_raspberry_pi:
-        # Respond with message about device not being a raspberry pi
-        dir_output = "Not on a Raspberry Pi!"
-    else: 
-        # TODO check if there are no devices and respond accordingly
-        # Reinitialize the modeprobe to read new changes
-        # When a sensor is removed, it still takes a few mins for it to update.
-        os.system('modprobe w1-gpio')
-        os.system('modprobe w1-therm')
-        # Get a list of the devices
-        dir_output = os.listdir(one_wire_devices_path)
-        # Remove the master device from the list
-        dir_output.remove('w1_bus_master1')       
-    return jsonify(dir_output)
+    def event_stream():
+        # Get available w1 devices if on the raspberry pi
+        if not is_raspberry_pi:
+            while True:
+                # Respond with message about device not being a raspberry pi
+                dir_output = "Not on a Raspberry Pi!"
+                yield "data: {}\n\n".format(dir_output)
+        else: 
+            while True:
+                # TODO check if there are no devices and respond accordingly
+                # Reinitialize the modeprobe to read new changes
+                # When a sensor is removed, it still takes a few mins for it to update.
+                os.system('modprobe w1-gpio')
+                os.system('modprobe w1-therm')
+                # Get a list of the devices
+                dir_output = os.listdir(one_wire_devices_path)
+                # Remove the master device from the list
+                dir_output.remove('w1_bus_master1')      
+                yield "data: {}\n\n".format(dir_output) 
+    return Response(event_stream(), mimetype="text/event-stream")
 
 
 
