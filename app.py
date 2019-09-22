@@ -39,16 +39,11 @@ class CustomFlask(Flask):
 # Create flask app. Note the updated class name.
 app = CustomFlask(__name__)
 
-# Main route of app. The (homepage). Javascript
-# served to this page will call the routes below.
+# Main route of app. This serves a Vuejs application.
 @app.route("/")
 def index():
     # This route returns the index.html template.
-    return render_template("index.html", title="Home")
-
-@app.route("/vue-test")
-def vue_test():
-    return render_template("vuetest.html")
+    return render_template("index.html")
 
 
 # Path to the 1 wire devices
