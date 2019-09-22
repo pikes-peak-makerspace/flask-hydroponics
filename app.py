@@ -52,7 +52,7 @@ def get_1wire_devices():
     else: 
         # TODO check if there are no devices and respond accordingly
         # Get a list of the devices
-        dir_output = os.listdir(path_to_sensors)
+        dir_output = os.listdir(one_wire_devices_path)
         # Remove the master device from the list
         dir_output.remove('w1_bus_master1')       
     return jsonify(dir_output)
