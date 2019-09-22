@@ -152,7 +152,7 @@ $(document).ready(function() {
 
     // Call again every x-amount of seconds.
     window.setInterval(function(){
-        update_temp_sensor_0();
-        update_temp_humid_sensor_0();
+        // update_temp_sensor_0();
+        // update_temp_humid_sensor_0();
     }, 1000);
 });
