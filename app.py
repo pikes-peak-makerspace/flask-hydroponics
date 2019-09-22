@@ -1,5 +1,5 @@
 # Get the things we need to run our Flask webserver and other utilities.
-from flask import Flask, render_template, redirect, url_for, session, jsonify
+from flask import Flask, render_template, redirect, url_for, session, jsonify, Response
 
 # Imported for reading Pi sensors and various other things.
 import os
@@ -65,6 +65,7 @@ def get_1wire_devices():
     else: 
         # TODO check if there are no devices and respond accordingly
         # Reinitialize the modeprobe to read new changes
+        # When a sensor is removed, it still takes a few mins for it to update.
         os.system('modprobe w1-gpio')
         os.system('modprobe w1-therm')
         # Get a list of the devices
@@ -136,6 +137,18 @@ def ds18b20_sensor_0():
     # Render the template for this route with data.
     # Read and display the JSON with JS calls on the index page.
     return jsonify(serial_number=serial_number, temps=temps, location=location)
+
+
+# Experimental SSE stream route
+@app.route("/stream")
+def stream():
+    def event_stream():
+        while True:
+            if is_raspberry_pi:
+                yield "data: {}\n\n".format(get_temp_data(temp_sensor_paths[1]))
+            else:
+                yield "data: {}\n\n".format("Some data!")
+    return Response(event_stream(), mimetype="text/event-stream")
 
 # URL of the route. Returns JSON with temp reading
 # and the location of the sensor in the physical 
