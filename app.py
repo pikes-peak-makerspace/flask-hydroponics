@@ -145,7 +145,7 @@ def stream():
     def event_stream():
         while True:
             if is_raspberry_pi:
-                yield "data: {}\n\n".format(get_temp_data(temp_sensor_paths[1]))
+                yield "data: {}\n\n".format(get_temp_data(temp_sensor_paths[0]))
             else:
                 yield "data: {}\n\n".format("Some data!")
     return Response(event_stream(), mimetype="text/event-stream")
