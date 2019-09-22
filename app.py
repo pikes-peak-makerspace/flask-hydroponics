@@ -28,6 +28,12 @@ except:
     print("Some features will be disabled or replaced with dummy data.")
     is_raspberry_pi = False
 
+# Initialize modprobe to read one-wire devices.
+# Like a water proof temp sensor: DS18B20
+if is_raspberry_pi:
+    os.system('modprobe w1-gpio')
+    os.system('modprobe w1-therm')
+
 # Change the symbols Jinja uses to let view take rendering control
 class CustomFlask(Flask):
     jinja_options = Flask.jinja_options.copy()
@@ -45,12 +51,6 @@ def index():
     # This route returns the index.html template.
     return render_template("index.html")
 
-# Initialize modprobe to read one-wire devices.
-# Like a water proof temp sensor: DS18B20
-if is_raspberry_pi:
-    os.system('modprobe w1-gpio')
-    os.system('modprobe w1-therm')
-
 # Path to the 1 wire devices
 one_wire_devices_path = "/sys/bus/w1/devices/"
 
@@ -63,9 +63,6 @@ def get_1wire_devices():
         dir_output = "Not on a Raspberry Pi!"
     else: 
         # TODO check if there are no devices and respond accordingly
-        # Update the modprobe devices for changes
-        os.system('modprobe w1-gpio')
-        os.system('modprobe w1-therm')
         # Get a list of the devices
         dir_output = os.listdir(one_wire_devices_path)
         # Remove the master device from the list
