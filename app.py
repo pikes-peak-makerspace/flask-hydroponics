@@ -28,8 +28,16 @@ except:
     print("Some features will be disabled or replaced with dummy data.")
     is_raspberry_pi = False
 
-# Create flask app
-app = Flask(__name__)
+# Change the symbols Jinja uses to let view take rendering control
+class CustomFlask(Flask):
+    jinja_options = Flask.jinja_options.copy()
+    jinja_options.update(dict(
+        variable_start_string='%%',  # Default is '{{', I'm changing this because Vue.js uses '{{' / '}}'
+        variable_end_string='%%',
+    ))
+
+# Create flask app. Note the updated class name.
+app = CustomFlask(__name__)
 
 # Main route of app. The (homepage). Javascript
 # served to this page will call the routes below.
@@ -37,6 +45,10 @@ app = Flask(__name__)
 def index():
     # This route returns the index.html template.
     return render_template("index.html", title="Home")
+
+@app.route("/vue-test")
+def vue_test():
+    return render_template("vuetest.html")
 
 
 # Path to the 1 wire devices

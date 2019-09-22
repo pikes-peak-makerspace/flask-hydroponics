@@ -16,7 +16,8 @@
     {# Defines a block for css so child templates may add to if needed #}
     {# Reference: https://stackoverflow.com/questions/3127502/concat-multiple-block-in-jinja2 #}
     {% block css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/libs/bootstrap.min.css') }}">
+    
+    {# Add custom css #}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     {% endblock %}
 
@@ -26,17 +27,11 @@
     {# Put everything in a bootstrap fluid container #}
     <div class="container-fluid">
 
-        {# Include the site navigation #}
-        {% include 'includes/navigation.html' %}
-
-        {# Set a default block for other pages to fill in content #}
-        {% block content %} {% endblock %}
     </div>
 
     {% block js %}
     {# Add libraries #}
     <script src="{{ url_for('static', filename='js/libs/jquery-3.3.1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/libs/bootstrap.bundle.min.js') }}"></script>
 
     {# Add custom scripts #}
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
