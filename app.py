@@ -51,7 +51,7 @@ def available_temp_sensors():
         # Get a list of the devices
         dir_output = os.listdir(path_to_sensors)
         # Remove the master device
-        dir_output
+        dir_output.remove('w1_bus_master1')
         print(dir_output)
     else: 
         dir_output = "No devices found"
