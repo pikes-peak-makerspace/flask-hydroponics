@@ -77,6 +77,7 @@ def get_1wire_devices():
                 # Remove the master device from the list
                 dir_output.remove('w1_bus_master1')      
                 yield "data: {}\n\n".format(dir_output) 
+        time.sleep(5)
     return Response(event_stream(), mimetype="text/event-stream")
 
 
@@ -153,6 +154,8 @@ def stream():
                 yield "data: {}\n\n".format(get_temp_data(temp_sensor_paths[0]))
             else:
                 yield "data: {}\n\n".format("Some data!")
+
+            time.sleep(1)
     return Response(event_stream(), mimetype="text/event-stream")
 
 # URL of the route. Returns JSON with temp reading
@@ -304,3 +307,8 @@ def get_temp_data(temp_sensor_path):
     temp_c = str(get_temps[0])
     temp_f = str(get_temps[1])
     return temp_f, temp_c
+
+
+if __name__ == '__main__':
+    app.debug = True
+    app.run(threaded=True)
